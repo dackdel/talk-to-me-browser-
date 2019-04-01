@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>talk to me</title>
+	<script type="text/javascript" src="p5/p5.min.js"></script>
+	<script type="text/javascript" src="p5/addons/p5.dom.min.js"></script>
+	<script type="text/javascript" src="p5/addons/p5.sound.min.js"></script>
+	<script type="text/javascript" src="p5/addons/p5.speech.js"></script>
+	<script type="text/javascript">
+
+		var myRec = new p5.SpeechRec('en-US', parseResult);
+		myRec.continuous = true; 
+		myRec.interimResults = false; //was getting detection errors with this turned on
+		myRec.onError = restart; //dirty dirty dirty hack gives up an error in console but still works
+		myRec.onEnd = restart; // hack gets steadily filthier, same as above
+		var songs = ['1.wav', '2.wav', '3.wav', '4.wav', '5.wav', '6.wav', '7.wav', '8.wav', '9.wav', '10.wav'];
+		var songCount = songs.length;
+		var currentSong = 0;
+		var song;
+
+		function restart() { // gunk
+			myRec.start();
+		}
+
+		function preload() {
+			soundFormats('wav');
+			song = loadSound('audioFiles/' + songs[currentSong%songCount]);
+		}
+
+		function setup() {
+			createCanvas(600, 600);
+			background(255, 255, 255);
+			fill(0, 0, 0, 255);
+			myRec.start();
+		}
+
+		function draw() {
+		}
+
+		function parseResult() {
+			var mostrecentword = myRec.resultString.split(' ').pop();
+			if(mostrecentword.indexOf("")!==-1)	{
+					song.playMode('untilDone');
+					song.play();
+					background(0, 255, 0);
+			}
+			else if(song.isPlaying())	{
+				myRec.stop();
+			}
+			console.log(mostrecentword);
+			console.log(currentSong);
+			currentSong = currentSong + 1;
+			song = loadSound('audioFiles/' + songs[currentSong%songCount]);
+		}
+
+	</script>
+</head>
+<body>
+</body>
+</html>
